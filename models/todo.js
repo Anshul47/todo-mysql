@@ -36,6 +36,48 @@ var getUUID = function() {
      return promise;
   };
 
+  var updateTodoData = function(textStr, id){
+      var promise = new Promise((resolve, reject) => {
+        var sql = 'update toto set todo_text = ?, udate = NOW() where id = ?';
+        mysql.dbCon.query(sql, [textStr, id], (err, rows, fields) => {
+            if(!err){
+                resolve({
+                    id: id,
+                    err: 0,
+                    err_msg: ''
+                });
+            }else{
+                reject({
+                    err: 1,
+                    err_msg: err
+                });
+            }
+        });
+      });
+      return promise;
+  };
+
+  var updateTodoCompletedData = function(id){
+    var promise = new Promise((resolve, reject) => {
+        var sql = 'update toto set comp_flag = 1, comp_date = NOW() where id = ?';
+        mysql.dbCon.query(sql, [id], (err, rows, fields) => {
+            if(!err){
+                resolve({
+                    id: id,
+                    err: 0,
+                    err_msg: ''
+                });
+            }else{
+                reject({
+                    err: 1,
+                    err_msg: err
+                });
+            }
+        });
+      });
+      return promise;
+  };
+
 var insertTodo = (todo) => {
 
    return new Promise((resolve, reject) => {
@@ -47,10 +89,58 @@ var insertTodo = (todo) => {
     }); 
 };
 
+var updateTodo = (textStr, id) => {
+    return new Promise((resolve, reject) => {
+        updateTodoData(textStr, id).then((updateData) => {
+            getTodoById(id).then((data) => {
+                resolve(data);
+            });
+        }).catch((err) => {
+            reject(err);
+        });
+    });
+};
+
+var updateTodoCompleted = (id) => {
+    return new Promise((resolve, reject) => {
+        updateTodoCompletedData(id).then((updateData) => {
+            getTodoById(id).then((data) => {
+                resolve(data);
+            });
+        }).catch((err) => {
+            reject(err);
+        });
+    });
+};
+
 var getAllTodo = () => {
 
     return new Promise((resolve, reject) => {
-        var sql = 'SELECT * FROM toto';
+        var sql = 'SELECT * FROM toto where comp_flag = 0 Order by cdate';
+        mysql.dbCon.query(sql, (err, rows, fields) => {
+
+            if (!err){
+                resolve({
+                    data: rows,
+                    err: 0,
+                    err_msg: ''
+                });
+            }else{
+                reject({
+                    data: rows,
+                    err: 0,
+                    err_msg: ''
+                });
+            }
+
+        });
+    });
+};
+
+var getAllCompletedTodo = () => {
+
+    return new Promise((resolve, reject) => {
+        var sql = 'SELECT * FROM toto where comp_flag = 1 Order by comp_date';
         mysql.dbCon.query(sql, (err, rows, fields) => {
 
             if (!err){
@@ -96,8 +186,32 @@ var getTodoById = (id) => {
     });
 };
 
+var deleteTodo = (id) => {
+    return new Promise((resolve, reject) => {
+        var sql = 'delete from toto where id = ?';
+        mysql.dbCon.query(sql, [id], (err, rows, fields) => {
+            if(!err){
+                resolve({
+                    data: 'Todo deleted',
+                    err: 0,
+                    err_msg: ''
+                });
+            }else{
+                reject({
+                    err: 1,
+                    err_msg: err
+                });
+            }
+        });
+    });
+};
+
 module.exports = {
     insertTodo,
     getAllTodo,
-    getTodoById
+    getTodoById,
+    updateTodo,
+    updateTodoCompleted,
+    getAllCompletedTodo,
+    deleteTodo
 };
