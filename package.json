@@ -9,8 +9,10 @@
   "author": "Anshul Reejonia",
   "license": "ISC",
   "dependencies": {
+    "bcryptjs": "^2.3.0",
     "body-parser": "^1.18.3",
     "express": "^4.16.4",
+    "jsonwebtoken": "^7.1.9",
     "mysql": "^2.16.0"
   }
 }

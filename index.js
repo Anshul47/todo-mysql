@@ -1,6 +1,11 @@
 const express = require('express');
 const bodyparser = require('body-parser');
+
+
 const todo = require('./models/todo.js');
+const user = require('./models/user.js');
+const {authenticate} = require('./middleware/authenticate');
+
 
 var app = express();
 app.use(bodyparser.json());
@@ -74,6 +79,30 @@ app.delete('/todo/:id', (req, res) => {
         res.send(result);
     }).catch((err) => {
         res.send(err);
+    });
+});
+
+
+//Insert and Login User
+app.post('/user', (req, res) => {
+    var body = req.body;
+    user.insertUser(body)
+    .then((result) => {
+        res.header('x-auth', result.data[0].token).send(result);
+    }).catch((err) => {
+        res.send(err);
+    });
+});
+
+app.get('/user/me', authenticate, (req, res) => {
+    
+    res.send({
+        data: {
+            uid: req.uid,
+            email: req.email
+        },
+        err: 0,
+        err_msg: ''
     });
 });
 
