@@ -120,7 +120,7 @@ var getUUID = function() {
         var token = '';
         var sql = 'update user set token = ?, udate = NOW() where uid = ?';
         mysql.dbCon.query(sql, [token, uid], (err, rows, fields) => {
-            console.log(rows);
+            //console.log(rows);
             if(!err){
                 if(rows.affectedRows > 0){
                     resolve({
