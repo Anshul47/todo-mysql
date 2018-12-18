@@ -106,6 +106,14 @@ app.get('/user/me', authenticate, (req, res) => {
     });
 });
 
+app.delete('/user/me/token', authenticate, (req, res) => {
+    user.logoutUser(req.uid).then((result) => {
+        res.send(result);
+    }).catch((err) => {
+        res.send(err);
+    });
+});
+
 app.listen(3000, () => {
     console.log(`Server started on port 3000`);
 });

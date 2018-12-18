@@ -39,7 +39,7 @@ var getUUID = function() {
 
   var getUserByEmail = function (email){
     var promise = new Promise(function(resolve, reject){
-        var sql = 'SELECT email, password, token FROM user where email = ?';
+        var sql = 'SELECT uid, email, password, token FROM user where email = ?';
         mysql.dbCon.query(sql, [email], (err, rows, fields) => {
 
             if (!err){
@@ -114,26 +114,104 @@ var getUUID = function() {
      return promise;
   };
 
+  var logoutUser = (uid) => {
+
+    var promise = new Promise((resolve, reject) => {
+        var token = '';
+        var sql = 'update user set token = ?, udate = NOW() where uid = ?';
+        mysql.dbCon.query(sql, [token, uid], (err, rows, fields) => {
+            console.log(rows);
+            if(!err){
+                if(rows.affectedRows > 0){
+                    resolve({
+                        err: 0,
+                        err_msg: 'Logout Done'
+                    });
+                }else{
+                    reject({
+                        err: 1,
+                        err_msg: 'Something went wrong'
+                    });
+                }
+            }else{
+                reject({
+                    err: 1,
+                    err_msg: 'Something went wrong'
+                });
+            }
+        });
+    });
+    return promise;
+  };
+
+  var updateUserToken = (uid, token) => {
+    var promise = new Promise((resolve, reject) => {
+        var sql = 'update user set token = ?, udate = NOW() where uid = ?';
+        mysql.dbCon.query(sql, [token, uid], (err, rows, fields) => {
+            //console.log(rows.affectedRows);
+            if(!err){
+                resolve({
+                    err: 0,
+                    err_msg: 'Update Done'
+                });
+            }else{
+                reject({
+                    err: 1,
+                    err_msg: 'Something went wrong'
+                });
+            }
+        });
+    });
+    return promise;
+  };
+
 
   var insertUser = (user) => {
 
     return new Promise((resolve, reject) => {
 
         getUserByEmail(user.email).then((userData) => {
-            
+
             if(userData.data.length > 0){
+
                 bcrypt.compare(user.password, userData.data[0].password, (err, result) => {
 
                     if(result){
-                        resolve({
+
+                        var token = '';
+                        var flag = 0;
+
+                        if(!userData.data[0].token.length > 0){
+                            flag = 1;
+                            token = jwt.sign(
+                                {
+                                    uid: userData.data[0].uid, 
+                                    access: 'auth'
+                                }, 
+                                TOKEN_SALT
+                            ).toString();
+                        }else{
+                            token = userData.data[0].token;
+                        }
+
+                        var returnData = {
                             data: [{
                                 email: userData.data[0].email,
-                                token: userData.data[0].token,
+                                token: token,
                                 access: 'x-auth'
                             }],
                             err: 0,
                             err_msg: ''
-                        });
+                        };
+
+                        if(flag == 0){
+                            resolve(returnData);
+                        }else{
+                            updateUserToken(userData.data[0].uid, token).then((data) => {
+                                resolve(returnData);
+                            });
+                        }
+
                     }else{
                         reject({
                             err: 1,
@@ -183,6 +261,7 @@ var getUUID = function() {
 
  module.exports = {
     insertUser,
-    getUserByToken
+    getUserByToken,
+    logoutUser
  };
 
