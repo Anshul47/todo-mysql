@@ -11,9 +11,9 @@ var app = express();
 app.use(bodyparser.json());
 
 //Add new todo
-app.post('/todo', (req, res) => {
+app.post('/todo', authenticate, (req, res) => {
     var body = req.body;
-    todo.insertTodo(body)
+    todo.insertTodo(body, req.uid)
     .then((result) => {
         res.send(result);
     }).catch((err) => {
@@ -22,8 +22,8 @@ app.post('/todo', (req, res) => {
 });
 
 //Get all todo's that are not completed
-app.get('/todo', (req, res) => {
-    todo.getAllTodo()
+app.get('/todo', authenticate, (req, res) => {
+    todo.getAllTodo(req.uid)
     .then((result) => {
         res.send(result);
     }).catch((err) => {
@@ -32,8 +32,8 @@ app.get('/todo', (req, res) => {
 });
 
 //Get All Completed Todo
-app.get('/todo/completed', (req, res) => {
-    todo.getAllCompletedTodo()
+app.get('/todo/completed', authenticate, (req, res) => {
+    todo.getAllCompletedTodo(req.uid)
     .then((result) => {
         res.send(result);
     }).catch((err) => {
@@ -42,8 +42,8 @@ app.get('/todo/completed', (req, res) => {
 });
 
 //Get todo by ID
-app.get('/todo/:id', (req, res) => {
-    todo.getTodoById(req.params.id)
+app.get('/todo/:id', authenticate, (req, res) => {
+    todo.getTodoById(req.params.id, req.uid)
     .then((result) => {
         res.send(result);
     }).catch((err) => {
@@ -52,9 +52,9 @@ app.get('/todo/:id', (req, res) => {
 });
 
 //Update Todo Text
-app.post('/todo/text/:id', (req, res) => {
+app.post('/todo/text/:id', authenticate, (req, res) => {
     var body = req.body;
-    todo.updateTodo(body.text, req.params.id)
+    todo.updateTodo(body.text, req.params.id, req.uid)
     .then((result) => {
         res.send(result);
     }).catch((err) => {
@@ -63,8 +63,8 @@ app.post('/todo/text/:id', (req, res) => {
 });
 
 //Mark Todo as Completed
-app.get('/todo/completed/:id', (req, res) => {
-    todo.updateTodoCompleted(req.params.id)
+app.get('/todo/completed/:id', authenticate, (req, res) => {
+    todo.updateTodoCompleted(req.params.id, req.uid)
     .then((result) => {
         res.send(result);
     }).catch((err) => {
@@ -73,8 +73,8 @@ app.get('/todo/completed/:id', (req, res) => {
 });
 
 //Delete Todo
-app.delete('/todo/:id', (req, res) => {
-    todo.deleteTodo(req.params.id)
+app.delete('/todo/:id', authenticate, (req, res) => {
+    todo.deleteTodo(req.params.id, req.uid)
     .then((result) => {
         res.send(result);
     }).catch((err) => {
