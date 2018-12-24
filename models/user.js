@@ -63,9 +63,10 @@ var getUUID = function() {
   var getUserIdFromToken = (token) => {
     var promise = new Promise((resolve, reject) => {
         var sql = 'SELECT uid, email, password, token FROM user where token = ?';
-        mysql.dbCon.query(sql, [email], (err, rows, fields) => {
-
+        mysql.dbCon.query(sql, [token], (err, rows, fields) => {
+            
             if (!err){
+                
                 resolve({
                     data: rows,
                     err: 0,
@@ -87,37 +88,36 @@ var getUUID = function() {
 
     return new Promise((resolve, reject) => {
         var decoded = undefined;
+        var userUUID = '';
         getUserIdFromToken(token).then((data) => {
-            var userUUID = data.rows[0].uid;
             try{
-
+                userUUID = data.data[0].uid;
                 decoded = jwt.verify(token, TOKEN_SALT);
-                if(decoded.uid == userUUID){
-                    getUserById(decoded.uid).then((userData) => {
-                        resolve(userData);
-                    }).catch((err) => {
-                        reject({
-                            err: 1,
-                            err_msg: 'Token Incorrect'
-                        });
-                    });
-                }else{
-                    reject({
-                        err: 1,
-                        err_msg: 'Token Incorrect'
-                    });
-                }
-
             }catch(e){
                 reject({
                     err: 1,
-                    err_msg: 'Token Incorrect'
+                    err_msg: 'Token Incorrect 3'
+                });
+            }
+            if(decoded.uid == userUUID){
+                getUserById(decoded.uid).then((userData) => {
+                    resolve(userData);
+                }).catch((err) => {
+                    reject({
+                        err: 1,
+                        err_msg: 'Token Incorrect 1'
+                    });
+                });
+            }else{
+                reject({
+                    err: 1,
+                    err_msg: 'Token Incorrect 2'
                 });
             }
         }).catch((err) => {
             reject({
                 err: 1,
-                err_msg: 'Token Incorrect'
+                err_msg: 'Token Incorrect 4'
             });
         });     
     });
