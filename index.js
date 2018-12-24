@@ -4,6 +4,7 @@ const bodyparser = require('body-parser');
 
 const todo = require('./models/todo.js');
 const user = require('./models/user.js');
+const customsql = require('./models/customsql.js');
 const {authenticate} = require('./middleware/authenticate');
 
 
@@ -15,9 +16,10 @@ app.use(bodyparser.json());
 
 //Add new todo
 app.get('/db', (req, res) => {
-    
-    res.send({
-        data: "server is running"
+    customsql.runSqlQuery().then((data) => {
+        res.send(data);
+    }).catch((err) => {
+        res.send(err);
     });
 });
 
