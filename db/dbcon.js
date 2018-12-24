@@ -1,12 +1,18 @@
 const mysql = require('mysql');
 
-var dbCon = mysql.createConnection({
-    host: 'localhost',
-    user: 'root',
-    password: '',
-    database: 'todo_db',
-    multipleStatements: true
-});
+var dbCon = '';
+if(process.env.JAWSDB_URL){
+    dbCon = mysql.createConnection(process.env.JAWSDB_URL);
+}else{
+    dbCon = mysql.createConnection({
+        host: 'localhost',
+        user: 'root',
+        password: '',
+        database: 'todo_db',
+        multipleStatements: true
+    });
+}
+
 
 dbCon.connect((err) => {
     if (!err)
