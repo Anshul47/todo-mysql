@@ -114,6 +114,11 @@ var getUUID = function() {
                     err_msg: 'Token Incorrect'
                 });
             }
+        }).catch((err) => {
+            reject({
+                err: 1,
+                err_msg: 'Token Incorrect'
+            });
         });     
     });
   }
