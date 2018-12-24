@@ -14,7 +14,7 @@ app.use(bodyparser.json());
 
 
 //Add new todo
-app.post('/db', authenticate, (req, res) => {
+app.get('/db', (req, res) => {
     
     res.send({
         data: "server is running"
