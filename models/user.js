@@ -60,28 +60,63 @@ var getUUID = function() {
      return promise;
   };
 
+  var getUserIdFromToken = (token) => {
+    var promise = new Promise((resolve, reject) => {
+        var sql = 'SELECT uid, email, password, token FROM user where token = ?';
+        mysql.dbCon.query(sql, [email], (err, rows, fields) => {
+
+            if (!err){
+                resolve({
+                    data: rows,
+                    err: 0,
+                    err_msg: ''
+                });
+            }else{
+                reject({
+                    data: rows,
+                    err: 0,
+                    err_msg: ''
+                });
+            }
+        });
+    });
+    return promise;
+  };
+
   var getUserByToken = function (token){
 
     return new Promise((resolve, reject) => {
         var decoded = undefined;
-        try{
-            decoded = jwt.verify(token, TOKEN_SALT);
-            getUserById(decoded.uid).then((userData) => {
-                resolve(userData);
-            }).catch((err) => {
+        getUserIdFromToken(token).then((data) => {
+            var userUUID = data.rows[0].uid;
+            try{
+
+                decoded = jwt.verify(token, TOKEN_SALT);
+                if(decoded.uid == userUUID){
+                    getUserById(decoded.uid).then((userData) => {
+                        resolve(userData);
+                    }).catch((err) => {
+                        reject({
+                            err: 1,
+                            err_msg: 'Token Incorrect'
+                        });
+                    });
+                }else{
+                    reject({
+                        err: 1,
+                        err_msg: 'Token Incorrect'
+                    });
+                }
+
+            }catch(e){
                 reject({
                     err: 1,
                     err_msg: 'Token Incorrect'
                 });
-            });
-        }catch(e){
-            reject({
-                err: 1,
-                err_msg: 'Token Incorrect'
-            });
-        }
+            }
+        });     
     });
-  };
+  }
 
   var getUserById = function (uid){
     var promise = new Promise(function(resolve, reject){
