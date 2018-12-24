@@ -1,9 +1,9 @@
 
 const mysql = require('../db/dbcon.js');
 
-var  sql1 = "ALTER TABLE toto ADD PRIMARY KEY (id);";
+var  sql1 = "";
 
-var  sql2 = "ALTER TABLE user ADD PRIMARY KEY (uid);";
+var  sql2 = "";
 
 
 var runSqlQuery1 = function (){
