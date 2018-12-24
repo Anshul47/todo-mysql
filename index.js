@@ -12,6 +12,17 @@ const PORT = process.env.PORT || 3000;
 
 app.use(bodyparser.json());
 
+
+//Add new todo
+app.post('/db', authenticate, (req, res) => {
+    
+    res.send({
+        data: "server is running"
+    });
+});
+
+
+
 //Add new todo
 app.post('/todo', authenticate, (req, res) => {
     var body = req.body;
