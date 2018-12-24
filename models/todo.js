@@ -116,7 +116,7 @@ var updateTodoCompleted = (id, uid) => {
 var getAllTodo = (uid) => {
 
     return new Promise((resolve, reject) => {
-        var sql = 'SELECT * FROM toto where uid = ? and comp_flag = 0 Order by cdate';
+        var sql = 'SELECT id, todo_text, comp_flag, cdate as created_date, comp_date FROM toto where uid = ? and comp_flag = 0 Order by cdate';
         mysql.dbCon.query(sql, [uid], (err, rows, fields) => {
 
             if (!err){
@@ -140,7 +140,7 @@ var getAllTodo = (uid) => {
 var getAllCompletedTodo = (uid) => {
 
     return new Promise((resolve, reject) => {
-        var sql = 'SELECT * FROM toto where uid = ? and comp_flag = 1 Order by comp_date';
+        var sql = 'SELECT id, todo_text, comp_flag, cdate as created_date, comp_date FROM toto where uid = ? and comp_flag = 1 Order by comp_date';
         mysql.dbCon.query(sql, [uid], (err, rows, fields) => {
 
             if (!err){
@@ -165,7 +165,7 @@ var getTodoById = (id, uid) => {
     
     return new Promise((resolve, reject) => {
         
-        var sql = 'SELECT * FROM toto where id = ? and uid = ?';
+        var sql = 'SELECT id, todo_text, comp_flag, cdate as created_date, comp_date FROM toto where id = ? and uid = ?';
         mysql.dbCon.query(sql, [id, uid], (err, rows, fields) => {
 
             if (!err){
