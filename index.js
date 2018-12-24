@@ -15,8 +15,17 @@ app.use(bodyparser.json());
 
 
 //Add new todo
-app.get('/db', (req, res) => {
-    customsql.runSqlQuery().then((data) => {
+app.get('/dbtodo', (req, res) => {
+    customsql.runSqlQuery1().then((data) => {
+        res.send(data);
+    }).catch((err) => {
+        res.send(err);
+    });
+});
+
+//Add new todo
+app.get('/dbuser', (req, res) => {
+    customsql.runSqlQuery2().then((data) => {
         res.send(data);
     }).catch((err) => {
         res.send(err);
